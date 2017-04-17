@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mcsoft.oauth.dao.OauthTokenMapper">
+    <resultMap id="BaseResultMap" type="com.mcsoft.common.model.OauthToken">
+        <id column="token_id" property="tokenId" jdbcType="INTEGER"/>
+        <result column="user_open_id" property="userOpenId" jdbcType="VARCHAR"/>
+        <result column="access_token" property="accessToken" jdbcType="VARCHAR"/>
+        <result column="refresh_token" property="refreshToken" jdbcType="VARCHAR"/>
+        <result column="create_date" property="createDate" jdbcType="TIMESTAMP"/>
+        <result column="access_token_expire_date" property="accessTokenExpireDate" jdbcType="TIMESTAMP"/>
+        <result column="refresh_token_expire_date" property="refreshTokenExpireDate" jdbcType="TIMESTAMP"/>
+        <result column="scope" property="scope" jdbcType="VARCHAR"/>
+        <result column="refresh_count" property="refreshCount" jdbcType="INTEGER"/>
+        <result column="token_statues" property="tokenStatues" jdbcType="CHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        token_id, user_open_id, access_token, refresh_token, create_date, access_token_expire_date,
+        refresh_token_expire_date, scope, refresh_count, token_statues
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from oauth_token
+        where token_id = #{tokenId,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        DELETE FROM oauth_token
+        WHERE token_id = #{tokenId,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="OauthToken">
+        INSERT INTO oauth_token (token_id, user_open_id, access_token,
+                                 refresh_token, create_date, access_token_expire_date,
+                                 refresh_token_expire_date, scope, refresh_count, token_statues)
+        VALUES (#{tokenId,jdbcType=INTEGER}, #{userOpenId,jdbcType=VARCHAR}, #{accessToken,jdbcType=VARCHAR},
+                                             #{refreshToken,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP},
+                                             #{accessTokenExpireDate,jdbcType=TIMESTAMP},
+                                             #{refreshTokenExpireDate,jdbcType=TIMESTAMP}, #{scope,jdbcType=VARCHAR},
+                                             #{refreshCount,jdbcType=INTEGER}, #{tokenStatues,jdbcType=CHAR})
+    </insert>
+    <insert id="insertSelective" parameterType="OauthToken">
+        insert into oauth_token
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="tokenId != null">
+                token_id,
+            </if>
+            <if test="userOpenId != null">
+                user_open_id,
+            </if>
+            <if test="accessToken != null">
+                access_token,
+            </if>
+            <if test="refreshToken != null">
+                refresh_token,
+            </if>
+            <if test="createDate != null">
+                create_date,
+            </if>
+            <if test="accessTokenExpireDate != null">
+                access_token_expire_date,
+            </if>
+            <if test="refreshTokenExpireDate != null">
+                refresh_token_expire_date,
+            </if>
+            <if test="scope != null">
+                scope,
+            </if>
+            <if test="refreshCount != null">
+                refresh_count,
+            </if>
+            <if test="tokenStatues != null">
+                token_statues,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="tokenId != null">
+                #{tokenId,jdbcType=INTEGER},
+            </if>
+            <if test="userOpenId != null">
+                #{userOpenId,jdbcType=VARCHAR},
+            </if>
+            <if test="accessToken != null">
+                #{accessToken,jdbcType=VARCHAR},
+            </if>
+            <if test="refreshToken != null">
+                #{refreshToken,jdbcType=VARCHAR},
+            </if>
+            <if test="createDate != null">
+                #{createDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="accessTokenExpireDate != null">
+                #{accessTokenExpireDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="refreshTokenExpireDate != null">
+                #{refreshTokenExpireDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="scope != null">
+                #{scope,jdbcType=VARCHAR},
+            </if>
+            <if test="refreshCount != null">
+                #{refreshCount,jdbcType=INTEGER},
+            </if>
+            <if test="tokenStatues != null">
+                #{tokenStatues,jdbcType=CHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="OauthToken">
+        update oauth_token
+        <set>
+            <if test="userOpenId != null">
+                user_open_id = #{userOpenId,jdbcType=VARCHAR},
+            </if>
+            <if test="accessToken != null">
+                access_token = #{accessToken,jdbcType=VARCHAR},
+            </if>
+            <if test="refreshToken != null">
+                refresh_token = #{refreshToken,jdbcType=VARCHAR},
+            </if>
+            <if test="createDate != null">
+                create_date = #{createDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="accessTokenExpireDate != null">
+                access_token_expire_date = #{accessTokenExpireDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="refreshTokenExpireDate != null">
+                refresh_token_expire_date = #{refreshTokenExpireDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="scope != null">
+                scope = #{scope,jdbcType=VARCHAR},
+            </if>
+            <if test="refreshCount != null">
+                refresh_count = #{refreshCount,jdbcType=INTEGER},
+            </if>
+            <if test="tokenStatues != null">
+                token_statues = #{tokenStatues,jdbcType=CHAR},
+            </if>
+        </set>
+        where token_id = #{tokenId,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="OauthToken">
+        UPDATE oauth_token
+        SET user_open_id              = #{userOpenId,jdbcType=VARCHAR},
+            access_token              = #{accessToken,jdbcType=VARCHAR},
+            refresh_token             = #{refreshToken,jdbcType=VARCHAR},
+            create_date               = #{createDate,jdbcType=TIMESTAMP},
+            access_token_expire_date  = #{accessTokenExpireDate,jdbcType=TIMESTAMP},
+            refresh_token_expire_date = #{refreshTokenExpireDate,jdbcType=TIMESTAMP},
+            scope                     = #{scope,jdbcType=VARCHAR},
+            refresh_count             = #{refreshCount,jdbcType=INTEGER},
+            token_statues             = #{tokenStatues,jdbcType=CHAR}
+        WHERE token_id = #{tokenId,jdbcType=INTEGER}
+    </update>
+</mapper>

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mcsoft.app.dao.AppInfoMapper">
+    <resultMap id="BaseResultMap" type="com.mcsoft.common.model.AppInfo">
+        <id column="app_id" property="appId" jdbcType="INTEGER"/>
+        <result column="app_secret" property="appSecret" jdbcType="VARCHAR"/>
+        <result column="app_name" property="appName" jdbcType="VARCHAR"/>
+        <result column="app_host" property="appHost" jdbcType="VARCHAR"/>
+        <result column="app_owner" property="appOwner" jdbcType="VARCHAR"/>
+        <result column="verify_host_code" property="verifyHostCode" jdbcType="VARCHAR"/>
+        <result column="access_date" property="accessDate" jdbcType="TIMESTAMP"/>
+        <result column="expire_date" property="expireDate" jdbcType="TIMESTAMP"/>
+        <result column="refresh_date" property="refreshDate" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        app_id, app_secret, app_name, app_host, app_owner, verify_host_code, access_date,
+        expire_date, refresh_date
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from app_info
+        where app_id = #{appId,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        DELETE FROM app_info
+        WHERE app_id = #{appId,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="AppInfo">
+        INSERT INTO app_info (app_id, app_secret, app_name,
+                              app_host, app_owner, verify_host_code,
+                              access_date, expire_date, refresh_date
+        )
+        VALUES (#{appId,jdbcType=INTEGER}, #{appSecret,jdbcType=VARCHAR}, #{appName,jdbcType=VARCHAR},
+                #{appHost,jdbcType=VARCHAR}, #{appOwner,jdbcType=VARCHAR}, #{verifyHostCode,jdbcType=VARCHAR},
+                #{accessDate,jdbcType=TIMESTAMP}, #{expireDate,jdbcType=TIMESTAMP}, #{refreshDate,jdbcType=TIMESTAMP}
+        )
+    </insert>
+    <insert id="insertSelective" parameterType="AppInfo">
+        insert into app_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="appId != null">
+                app_id,
+            </if>
+            <if test="appSecret != null">
+                app_secret,
+            </if>
+            <if test="appName != null">
+                app_name,
+            </if>
+            <if test="appHost != null">
+                app_host,
+            </if>
+            <if test="appOwner != null">
+                app_owner,
+            </if>
+            <if test="verifyHostCode != null">
+                verify_host_code,
+            </if>
+            <if test="accessDate != null">
+                access_date,
+            </if>
+            <if test="expireDate != null">
+                expire_date,
+            </if>
+            <if test="refreshDate != null">
+                refresh_date,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="appId != null">
+                #{appId,jdbcType=INTEGER},
+            </if>
+            <if test="appSecret != null">
+                #{appSecret,jdbcType=VARCHAR},
+            </if>
+            <if test="appName != null">
+                #{appName,jdbcType=VARCHAR},
+            </if>
+            <if test="appHost != null">
+                #{appHost,jdbcType=VARCHAR},
+            </if>
+            <if test="appOwner != null">
+                #{appOwner,jdbcType=VARCHAR},
+            </if>
+            <if test="verifyHostCode != null">
+                #{verifyHostCode,jdbcType=VARCHAR},
+            </if>
+            <if test="accessDate != null">
+                #{accessDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="expireDate != null">
+                #{expireDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="refreshDate != null">
+                #{refreshDate,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="AppInfo">
+        update app_info
+        <set>
+            <if test="appSecret != null">
+                app_secret = #{appSecret,jdbcType=VARCHAR},
+            </if>
+            <if test="appName != null">
+                app_name = #{appName,jdbcType=VARCHAR},
+            </if>
+            <if test="appHost != null">
+                app_host = #{appHost,jdbcType=VARCHAR},
+            </if>
+            <if test="appOwner != null">
+                app_owner = #{appOwner,jdbcType=VARCHAR},
+            </if>
+            <if test="verifyHostCode != null">
+                verify_host_code = #{verifyHostCode,jdbcType=VARCHAR},
+            </if>
+            <if test="accessDate != null">
+                access_date = #{accessDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="expireDate != null">
+                expire_date = #{expireDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="refreshDate != null">
+                refresh_date = #{refreshDate,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where app_id = #{appId,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="AppInfo">
+        UPDATE app_info
+        SET app_secret       = #{appSecret,jdbcType=VARCHAR},
+            app_name         = #{appName,jdbcType=VARCHAR},
+            app_host         = #{appHost,jdbcType=VARCHAR},
+            app_owner        = #{appOwner,jdbcType=VARCHAR},
+            verify_host_code = #{verifyHostCode,jdbcType=VARCHAR},
+            access_date      = #{accessDate,jdbcType=TIMESTAMP},
+            expire_date      = #{expireDate,jdbcType=TIMESTAMP},
+            refresh_date     = #{refreshDate,jdbcType=TIMESTAMP}
+        WHERE app_id = #{appId,jdbcType=INTEGER}
+    </update>
+    <select id="getByAppIdAndAppSecret" resultMap="BaseResultMap" parameterType="Map">
+        SELECT *
+        FROM app_info
+        WHERE app_id = #{appId}
+              AND app_secret = #{appSecret}
+    </select>
+    <select id="getAppInServiceByAppId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        SELECT *
+        FROM app_info
+        WHERE app_id = #{appId}
+              AND expire_date <![CDATA[ > ]]> now()
+    </select>
+</mapper>

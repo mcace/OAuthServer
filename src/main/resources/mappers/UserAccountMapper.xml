@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mcsoft.account.dao.UserAccountMapper">
+    <resultMap id="BaseResultMap" type="com.mcsoft.common.model.UserAccount">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="username" property="username" jdbcType="CHAR"/>
+        <result column="password" property="password" jdbcType="CHAR"/>
+        <result column="nickname" property="nickname" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, username, password, nickname
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from user_account
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        DELETE FROM user_account
+        WHERE id = #{id,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="UserAccount">
+        INSERT INTO user_account (id, username, password,
+                                  nickname)
+        VALUES (#{id,jdbcType=INTEGER}, #{username,jdbcType=CHAR}, #{password,jdbcType=CHAR},
+                #{nickname,jdbcType=VARCHAR})
+    </insert>
+    <insert id="insertSelective" parameterType="UserAccount">
+        insert into user_account
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="username != null">
+                username,
+            </if>
+            <if test="password != null">
+                password,
+            </if>
+            <if test="nickname != null">
+                nickname,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="username != null">
+                #{username,jdbcType=CHAR},
+            </if>
+            <if test="password != null">
+                #{password,jdbcType=CHAR},
+            </if>
+            <if test="nickname != null">
+                #{nickname,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="UserAccount">
+        update user_account
+        <set>
+            <if test="username != null">
+                username = #{username,jdbcType=CHAR},
+            </if>
+            <if test="password != null">
+                password = #{password,jdbcType=CHAR},
+            </if>
+            <if test="nickname != null">
+                nickname = #{nickname,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="UserAccount">
+        UPDATE user_account
+        SET username = #{username,jdbcType=CHAR},
+            password = #{password,jdbcType=CHAR},
+            nickname = #{nickname,jdbcType=VARCHAR}
+        WHERE id = #{id,jdbcType=INTEGER}
+    </update>
+    <select id="getUserAccountByUsernameAndPwd" resultMap="BaseResultMap" parameterType="Map">
+        SELECT *
+        FROM user_account
+        WHERE username = #{username}
+              AND password = #{md5pwd}
+    </select>
+    <select id="getUserAccountByUsername" resultMap="BaseResultMap" parameterType="java.lang.String">
+        SELECT *
+        FROM user_account
+        WHERE lower(username) = lower(#{username})
+    </select>
+    <insert id="insertUser" parameterType="UserAccount" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO user_account (username, password, nickname) VALUES (#{username}, #{md5pwd}, #{nickname})
+    </insert>
+</mapper>

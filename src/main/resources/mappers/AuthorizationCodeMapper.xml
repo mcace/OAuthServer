@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mcsoft.oauth.dao.AuthorizationCodeMapper">
+    <resultMap id="BaseResultMap" type="com.mcsoft.common.model.AuthorizationCode">
+        <id column="code_id" property="codeId" jdbcType="INTEGER"/>
+        <result column="user_open_id" property="userOpenId" jdbcType="VARCHAR"/>
+        <result column="authorz_code" property="authorzCode" jdbcType="VARCHAR"/>
+        <result column="create_date" property="createDate" jdbcType="TIMESTAMP"/>
+        <result column="expire_date" property="expireDate" jdbcType="TIMESTAMP"/>
+        <result column="scope" property="scope" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        code_id, user_open_id, authorz_code, create_date, expire_date, scope
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from authorization_code
+        where code_id = #{codeId,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        DELETE FROM authorization_code
+        WHERE code_id = #{codeId,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="AuthorizationCode">
+        INSERT INTO authorization_code (code_id, user_open_id, authorz_code,
+                                        create_date, expire_date, scope)
+        VALUES (#{codeId,jdbcType=INTEGER}, #{userOpenId,jdbcType=VARCHAR}, #{authorzCode,jdbcType=VARCHAR},
+                #{createDate,jdbcType=TIMESTAMP}, #{expireDate,jdbcType=TIMESTAMP}, #{scope,jdbcType=VARCHAR})
+    </insert>
+    <insert id="insertSelective" parameterType="AuthorizationCode">
+        insert into authorization_code
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="codeId != null">
+                code_id,
+            </if>
+            <if test="userOpenId != null">
+                user_open_id,
+            </if>
+            <if test="authorzCode != null">
+                authorz_code,
+            </if>
+            <if test="createDate != null">
+                create_date,
+            </if>
+            <if test="expireDate != null">
+                expire_date,
+            </if>
+            <if test="scope != null">
+                scope,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="codeId != null">
+                #{codeId,jdbcType=INTEGER},
+            </if>
+            <if test="userOpenId != null">
+                #{userOpenId,jdbcType=VARCHAR},
+            </if>
+            <if test="authorzCode != null">
+                #{authorzCode,jdbcType=VARCHAR},
+            </if>
+            <if test="createDate != null">
+                #{createDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="expireDate != null">
+                #{expireDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="scope != null">
+                #{scope,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="AuthorizationCode">
+        update authorization_code
+        <set>
+            <if test="userOpenId != null">
+                user_open_id = #{userOpenId,jdbcType=VARCHAR},
+            </if>
+            <if test="authorzCode != null">
+                authorz_code = #{authorzCode,jdbcType=VARCHAR},
+            </if>
+            <if test="createDate != null">
+                create_date = #{createDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="expireDate != null">
+                expire_date = #{expireDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="scope != null">
+                scope = #{scope,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where code_id = #{codeId,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="AuthorizationCode">
+        UPDATE authorization_code
+        SET user_open_id = #{userOpenId,jdbcType=VARCHAR},
+            authorz_code = #{authorzCode,jdbcType=VARCHAR},
+            create_date  = #{createDate,jdbcType=TIMESTAMP},
+            expire_date  = #{expireDate,jdbcType=TIMESTAMP},
+            scope        = #{scope,jdbcType=VARCHAR}
+        WHERE code_id = #{codeId,jdbcType=INTEGER}
+    </update>
+</mapper>

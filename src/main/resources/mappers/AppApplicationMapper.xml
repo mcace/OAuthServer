@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mcsoft.app.dao.AppApplicationMapper">
+    <resultMap id="BaseResultMap" type="com.mcsoft.common.model.AppApplication">
+        <id column="apply_id" property="applyId" jdbcType="INTEGER"/>
+        <result column="app_name" property="appName" jdbcType="VARCHAR"/>
+        <result column="app_host" property="appHost" jdbcType="VARCHAR"/>
+        <result column="app_owner" property="appOwner" jdbcType="VARCHAR"/>
+        <result column="apply_date" property="applyDate" jdbcType="TIMESTAMP"/>
+        <result column="apply_state" property="applyState" jdbcType="CHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        apply_id, app_name, app_host, app_owner, apply_date, apply_state
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from app_application
+        where apply_id = #{applyId,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        DELETE FROM app_application
+        WHERE apply_id = #{applyId,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="AppApplication">
+        INSERT INTO app_application (apply_id, app_name, app_host,
+                                     app_owner, apply_date, apply_state
+        )
+        VALUES (#{applyId,jdbcType=INTEGER}, #{appName,jdbcType=VARCHAR}, #{appHost,jdbcType=VARCHAR},
+                #{appOwner,jdbcType=VARCHAR}, #{applyDate,jdbcType=TIMESTAMP}, #{applyState,jdbcType=CHAR}
+        )
+    </insert>
+    <insert id="insertSelective" parameterType="AppApplication">
+        insert into app_application
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="applyId != null">
+                apply_id,
+            </if>
+            <if test="appName != null">
+                app_name,
+            </if>
+            <if test="appHost != null">
+                app_host,
+            </if>
+            <if test="appOwner != null">
+                app_owner,
+            </if>
+            <if test="applyDate != null">
+                apply_date,
+            </if>
+            <if test="applyState != null">
+                apply_state,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="applyId != null">
+                #{applyId,jdbcType=INTEGER},
+            </if>
+            <if test="appName != null">
+                #{appName,jdbcType=VARCHAR},
+            </if>
+            <if test="appHost != null">
+                #{appHost,jdbcType=VARCHAR},
+            </if>
+            <if test="appOwner != null">
+                #{appOwner,jdbcType=VARCHAR},
+            </if>
+            <if test="applyDate != null">
+                #{applyDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="applyState != null">
+                #{applyState,jdbcType=CHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="AppApplication">
+        update app_application
+        <set>
+            <if test="appName != null">
+                app_name = #{appName,jdbcType=VARCHAR},
+            </if>
+            <if test="appHost != null">
+                app_host = #{appHost,jdbcType=VARCHAR},
+            </if>
+            <if test="appOwner != null">
+                app_owner = #{appOwner,jdbcType=VARCHAR},
+            </if>
+            <if test="applyDate != null">
+                apply_date = #{applyDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="applyState != null">
+                apply_state = #{applyState,jdbcType=CHAR},
+            </if>
+        </set>
+        where apply_id = #{applyId,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="AppApplication">
+        UPDATE app_application
+        SET app_name    = #{appName,jdbcType=VARCHAR},
+            app_host    = #{appHost,jdbcType=VARCHAR},
+            app_owner   = #{appOwner,jdbcType=VARCHAR},
+            apply_date  = #{applyDate,jdbcType=TIMESTAMP},
+            apply_state = #{applyState,jdbcType=CHAR}
+        WHERE apply_id = #{applyId,jdbcType=INTEGER}
+    </update>
+</mapper>

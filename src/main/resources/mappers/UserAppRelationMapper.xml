@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mcsoft.account.dao.UserAppRelationMapper">
+    <resultMap id="BaseResultMap" type="UserAppRelation">
+        <id column="user_open_id" property="userOpenId" jdbcType="VARCHAR"/>
+        <result column="user_id" property="userId" jdbcType="INTEGER"/>
+        <result column="app_id" property="appId" jdbcType="INTEGER"/>
+        <result column="create_date" property="createDate" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        user_open_id, user_id, app_id, create_date
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from user_app_relation
+        where user_open_id = #{userOpenId,jdbcType=VARCHAR}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+        DELETE FROM user_app_relation
+        WHERE user_open_id = #{userOpenId,jdbcType=VARCHAR}
+    </delete>
+    <insert id="insert" parameterType="UserAppRelation">
+        INSERT INTO user_app_relation (user_open_id, user_id, app_id,
+                                       create_date)
+        VALUES (#{userOpenId,jdbcType=VARCHAR}, #{userId,jdbcType=INTEGER}, #{appId,jdbcType=INTEGER},
+                #{createDate,jdbcType=TIMESTAMP})
+    </insert>
+    <insert id="insertSelective" parameterType="UserAppRelation">
+        insert into user_app_relation
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userOpenId != null">
+                user_open_id,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="appId != null">
+                app_id,
+            </if>
+            <if test="createDate != null">
+                create_date,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userOpenId != null">
+                #{userOpenId,jdbcType=VARCHAR},
+            </if>
+            <if test="userId != null">
+                #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="appId != null">
+                #{appId,jdbcType=INTEGER},
+            </if>
+            <if test="createDate != null">
+                #{createDate,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="UserAppRelation">
+        update user_app_relation
+        <set>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="appId != null">
+                app_id = #{appId,jdbcType=INTEGER},
+            </if>
+            <if test="createDate != null">
+                create_date = #{createDate,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where user_open_id = #{userOpenId,jdbcType=VARCHAR}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="UserAppRelation">
+        UPDATE user_app_relation
+        SET user_id     = #{userId,jdbcType=INTEGER},
+            app_id      = #{appId,jdbcType=INTEGER},
+            create_date = #{createDate,jdbcType=TIMESTAMP}
+        WHERE user_open_id = #{userOpenId,jdbcType=VARCHAR}
+    </update>
+    <select id="selectByUserIDAndAppID" resultMap="BaseResultMap" parameterType="Map">
+        SELECT *
+        FROM user_app_relation
+        WHERE user_id = #{userID}
+              AND app_id = #{appID};
+    </select>
+    <select id="selectByOpenID" resultMap="BaseResultMap" parameterType="java.lang.String">
+        SELECT *
+        FROM user_app_relation
+        WHERE user_open_id = #{openID}
+    </select>
+</mapper>

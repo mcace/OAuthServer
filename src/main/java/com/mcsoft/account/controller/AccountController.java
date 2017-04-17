@@ -3,6 +3,7 @@ package com.mcsoft.account.controller;
 import com.mcsoft.account.bean.UserInfo;
 import com.mcsoft.account.service.AccountService;
 import com.mcsoft.common.bean.APIResult;
+import com.mcsoft.common.bean.OAuthConstants;
 import com.mcsoft.common.model.UserAccount;
 import com.mcsoft.common.utils.StringUtils;
 import org.apache.log4j.Logger;
@@ -30,7 +31,7 @@ public class AccountController {
 
     @RequestMapping(value = "login", method = RequestMethod.GET)
     public String loginRedirect() {
-        return "/account/login";
+        return "/account/login.html";
     }
 
     @RequestMapping(value = "register", method = RequestMethod.GET)
@@ -50,18 +51,18 @@ public class AccountController {
     @RequestMapping(value = "/sign-in", method = RequestMethod.POST)
     public APIResult signIn(HttpSession session, String username, String pwd) {
         APIResult result = new APIResult();
-        result.setCode(200);
+        result.setCode(OAuthConstants.Code.OK);
 
         if (StringUtils.isEmpty(username) || StringUtils.isEmpty(pwd)) {
             //参数错误
-            result.setCode(401);
+            result.setCode(OAuthConstants.Code.INVALID_REQUEST);
             return result;
         }
         try {
             UserAccount account = accountService.signIn(username, pwd);
             if (null == account) {
                 //未查询到用户，账号或密码错误
-                result.setCode(602);
+                result.setCode(OAuthConstants.Code.INVALID_NAME_OR_PWD);
                 return result;
             }
             //查询到用户
@@ -76,7 +77,7 @@ public class AccountController {
             logger.error("用户登录进行账号密码验证时服务器出错,用户名:" + username + ",密码:" + pwd);
             logger.error(e);
 
-            result.setCode(500);
+            result.setCode(OAuthConstants.Code.BAD_REQUEST);
             return result;
         }
 
@@ -95,11 +96,11 @@ public class AccountController {
     @RequestMapping(value = "sing-up", method = RequestMethod.POST)
     public APIResult signUp(String username, String pwd, String nickname) {
         APIResult result = new APIResult();
-        result.setCode(200);
+        result.setCode(OAuthConstants.Code.OK);
 
         if (StringUtils.isEmpty(username) || StringUtils.isEmpty(pwd) || StringUtils.isEmpty(nickname)) {
             //参数错误
-            result.setCode(401);
+            result.setCode(OAuthConstants.Code.INVALID_REQUEST);
             return result;
         }
 
@@ -107,14 +108,14 @@ public class AccountController {
             UserAccount account = accountService.getUserByUsername(username);
             if (null != account) {
                 //账号重复
-                result.setCode(601);
+                result.setCode(OAuthConstants.Code.USERNAME_DUPLICATED);
                 return result;
             }
             account = accountService.signUp(username, pwd, nickname);
             if (null == account) {
                 logger.error("用户注册保存数据库失败，用户名:" + username + ",密码:" + pwd + ",昵称:" + nickname);
                 //保存失败
-                result.setCode(500);
+                result.setCode(OAuthConstants.Code.BAD_REQUEST);
                 return result;
             }
             account.setPassword(null);//不再返回用户密码
@@ -123,7 +124,7 @@ public class AccountController {
         } catch (Exception e) {
             logger.error("注册时发生错误，用户名:" + username + ",密码:" + pwd + ",昵称:" + nickname);
             logger.error(e);
-            result.setCode(500);
+            result.setCode(OAuthConstants.Code.BAD_REQUEST);
             return result;
         }
     }
@@ -136,11 +137,11 @@ public class AccountController {
      */
     public APIResult getUserAccountInfo(HttpSession session) {
         APIResult result = new APIResult();
-        result.setCode(200);
+        result.setCode(OAuthConstants.Code.OK);
 
         String username = (String) session.getAttribute("username");
         if (null == username) {
-            result.setCode(403);
+            result.setCode(OAuthConstants.Code.USER_NOLOGIN);
             return result;
         }
 
@@ -152,7 +153,7 @@ public class AccountController {
         } catch (Exception e) {
             logger.error("查询用户信息时服务器发生错误");
             logger.error(e);
-            result.setCode(500);
+            result.setCode(OAuthConstants.Code.BAD_REQUEST);
             return result;
         }
     }

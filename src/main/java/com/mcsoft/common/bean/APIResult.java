@@ -7,14 +7,14 @@ package com.mcsoft.common.bean;
  * @date : 2017/4/7 15:17
  */
 public class APIResult {
-    private int code;//状态码
+    private String code;//状态码
     private Object data;//返回数据
 
-    public int getCode() {
+    public String getCode() {
         return code;
     }
 
-    public void setCode(int code) {
+    public void setCode(String code) {
         this.code = code;
     }
 

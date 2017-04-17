@@ -26,7 +26,7 @@ public interface AuthService {
      * @param request HTTP请求
      * @return 是否已确认给予授权
      */
-    boolean isConfirmedAuthRequest(HttpServletRequest request);
+    boolean isConfirmingAuthRequest(HttpServletRequest request);
 
     /**
      * 验证重定向URI是否合法

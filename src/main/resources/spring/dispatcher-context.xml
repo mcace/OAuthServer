@@ -15,7 +15,9 @@
     </bean>
 
     <!-- static resources links -->
+    <mvc:resources mapping="/error/**" location="/error/"/>
     <mvc:resources mapping="/account/**" location="/account/"/>
     <mvc:resources mapping="/app/**" location="/app/"/>
     <mvc:resources mapping="/oauth2.0/**" location="/oauth2.0/"/>
+    <mvc:resources mapping="/asset/**" location="/asset/"/>
 </beans>

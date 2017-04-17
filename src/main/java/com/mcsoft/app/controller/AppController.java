@@ -2,10 +2,11 @@ package com.mcsoft.app.controller;
 
 import com.mcsoft.app.service.AppService;
 import com.mcsoft.common.bean.APIResult;
+import com.mcsoft.common.bean.OAuthConstants;
 import com.mcsoft.common.model.AppApplication;
+import com.mcsoft.common.utils.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
-import com.mcsoft.common.utils.StringUtils;
 
 import javax.annotation.Resource;
 
@@ -32,32 +33,32 @@ public class AppController {
      */
     public APIResult applyAccess(String appName, String host, String owner) {
         APIResult result = new APIResult();
-        result.setCode(200);
+        result.setCode(OAuthConstants.Code.OK);
 
         if (StringUtils.hasEmpty(appName, host, owner)) {
-            result.setCode(401);
+            result.setCode(OAuthConstants.Code.INVALID_REQUEST);
             return result;
         }
 
         try {
             AppApplication application = appService.getApplicationByAppName(appName);
             if (null != application) {
-                result.setCode(701);
+                result.setCode(OAuthConstants.Code.APPNAME_DUPLICATED);
                 return result;
             }
             application = appService.applyAppAccess(appName, host, owner);
             if (null == application) {
                 logger.error("第三方提交接入申请保存数据库时失败，appName:" + appName + ",host:" + host + ",owner:" + owner);
-                result.setCode(500);
+                result.setCode(OAuthConstants.Code.BAD_REQUEST);
                 return result;
             }
-            result.setCode(200);
+            result.setCode(OAuthConstants.Code.OK);
             result.setData(application);
             return result;
         } catch (Exception e) {
             logger.error("第三方提交接入申请时服务器发生错误，appName:" + appName + ",host:" + host + ",owner:" + owner);
             logger.error(e);
-            result.setCode(500);
+            result.setCode(OAuthConstants.Code.BAD_REQUEST);
             return result;
 
         }
@@ -70,24 +71,24 @@ public class AppController {
      */
     public APIResult getApplicationByAppName(String appName) {
         APIResult result = new APIResult();
-        result.setCode(200);
+        result.setCode(OAuthConstants.Code.OK);
 
         if (StringUtils.isEmpty(appName)) {
-            result.setCode(401);
+            result.setCode(OAuthConstants.Code.INVALID_REQUEST);
             return result;
         }
 
         try {
             AppApplication application = appService.getApplicationByAppName(appName);
             if (null == application) {
-                result.setCode(402);
+                result.setCode(OAuthConstants.Code.NO_RESULT);
             }
             result.setData(application);
             return result;
         } catch (Exception e) {
             logger.error("通过appName查询第三方接入申请时发生错误，appName:" + appName);
             logger.error(e);
-            result.setCode(500);
+            result.setCode(OAuthConstants.Code.BAD_REQUEST);
             return result;
         }
     }

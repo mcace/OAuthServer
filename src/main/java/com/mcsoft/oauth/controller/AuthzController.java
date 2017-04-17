@@ -75,12 +75,12 @@ public class AuthzController {
                 //记录redirect_uri等参数，当用户授权后进行一致性验证
                 authService.persistAuthData(request);
                 //跳转到授权界面，授权界面验证用户登陆情况显示[登录并授权]/[授权]
-                response.sendRedirect(AuthRequest.concatURI(request, request.getContextPath() + "/oauth2.0/show"));
+                response.sendRedirect(AuthRequest.concatAuthURI(request, request.getContextPath() + "/oauth2.0/show"));
                 return;
             }
 
             //验证是第二次授权请求(用户已登录且有授权字段)，即用户主动点击“授权”按钮后的授权请求
-            if (authService.isConfirmedAuthRequest(request)) {
+            if (authService.isConfirmingAuthRequest(request)) {
                 if (!authService.isRequestDataNotModified(request)) {
                     throw OAuthUtils.handleOAuthProblemException(OAuthConstants.Messages.REQUEST_DATA_MODIFIED);
                 }
@@ -117,12 +117,12 @@ public class AuthzController {
             if (ex.getClass().equals(OAuthProblemException.class)) {
                 oauthResponse = OAuthResponse
                         .errorResponse(HttpServletResponse.SC_UNAUTHORIZED)
-                        .error((OAuthProblemException) ex)
+                        .error(OAuthProblemException.error(OAuthConstants.Code.INVALID_REQUEST).description(ex.getMessage()))
                         .buildJSONMessage();
             } else {
                 oauthResponse = OAuthResponse
                         .errorResponse(HttpServletResponse.SC_UNAUTHORIZED)
-                        .error(OAuthProblemException.error("bad_request").description(ex.getMessage()))
+                        .error(OAuthProblemException.error(OAuthConstants.Code.BAD_REQUEST).description(ex.getMessage()))
                         .buildJSONMessage();
             }
             response.getWriter().write(oauthResponse.getBody());
@@ -130,9 +130,18 @@ public class AuthzController {
     }
 
     @RequestMapping("/show")
-    public void show(HttpServletRequest request, HttpServletResponse response, RedirectAttributes attributes)
+    public String show(HttpServletRequest request, HttpServletResponse response, RedirectAttributes attributes)
             throws OAuthSystemException, IOException {
 
+        try {
+            new OAuthAuthzRequest(request);//验证参数
+
+            return "redirect:" + AuthRequest.concatAuthURI(request, "/oauth2.0/show.html");
+        } catch (OAuthProblemException ex) {
+            logger.error("验证授权时发生错误");
+            logger.error(ex);
+            return "/error/401.html";
+        }
     }
 
 

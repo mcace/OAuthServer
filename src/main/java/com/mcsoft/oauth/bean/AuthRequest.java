@@ -1,5 +1,7 @@
 package com.mcsoft.oauth.bean;
 
+import com.mcsoft.common.utils.StringUtils;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -81,14 +83,14 @@ public class AuthRequest {
 
     @Override
     public String toString() {
-        return "response_type=" + (null == this.response_type ? "" : response_type) + "&"
-                + "client_id=" + (null == this.client_id ? "" : client_id) + "&"
-                + "scope=" + (null == this.scope ? "" : scope) + "&"
-                + "state=" + (null == this.state ? "" : state) + "&"
-                + "redirect_uri=" + (null == this.redirect_uri ? "" : redirect_uri);
+        return (StringUtils.isEmpty(this.response_type) ? "" : "response_type=" + response_type) + "&"
+                + (StringUtils.isEmpty(this.client_id) ? "" : "client_id=" + client_id) + "&"
+                + (StringUtils.isEmpty(this.scope) ? "" : "scope=" + scope) + "&"
+                + (StringUtils.isEmpty(this.state) ? "" : "state=" + state) + "&"
+                + (StringUtils.isEmpty(this.redirect_uri) ? "" : "redirect_uri=" + redirect_uri);
     }
 
-    public String concatURI(String uri) {
+    public String concatAuthURI(String uri) {
         if (uri.contains("?")) {
             return uri + "&" + this.toString();
         } else {
@@ -96,7 +98,7 @@ public class AuthRequest {
         }
     }
 
-    public static String concatURI(HttpServletRequest request, String uri) {
-        return new AuthRequest(request).concatURI(uri);
+    public static String concatAuthURI(HttpServletRequest request, String uri) {
+        return new AuthRequest(request).concatAuthURI(uri);
     }
 }

@@ -23,14 +23,14 @@ public class AuthServiceImpl implements AuthService {
     public boolean isAuthRedirectRequest(HttpServletRequest request) {
         String method = request.getMethod();
         return StringUtils.isEmpty(method) || method.equals(OAuth.HttpMethod.GET)
-                || !"1".equals(request.getParameter("update_auth"));
+                || !"1".equals(request.getParameter(OAuthConstants.Params.UPDATE_AUTH));
     }
 
     @Override
-    public boolean isConfirmedAuthRequest(HttpServletRequest request) {
+    public boolean isConfirmingAuthRequest(HttpServletRequest request) {
         String method = request.getMethod();
         return !StringUtils.isEmpty(method) || method.equals(OAuth.HttpMethod.POST)
-                || "1".equals(request.getParameter("update_auth"));
+                || "1".equals(request.getParameter(OAuthConstants.Params.UPDATE_AUTH));
     }
 
     public boolean isLegalRedirectURI(String host, String redirectURI) {

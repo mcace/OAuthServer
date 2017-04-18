@@ -43,4 +43,15 @@ public class StringUtils {
 
         return UUID.nameUUIDFromBytes(fromStringBuilder.toString().getBytes()).toString().toLowerCase();
     }
+
+
+    //首字母大写
+    public static String capitalize(String str) {
+        int strLen;
+        if (str == null || (strLen = str.length()) == 0) {
+            return str;
+        }
+        return String.valueOf(Character.toTitleCase(str.charAt(0))) +
+                str.substring(1);
+    }
 }

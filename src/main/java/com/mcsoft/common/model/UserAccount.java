@@ -1,5 +1,7 @@
 package com.mcsoft.common.model;
 
+import java.util.Date;
+
 public class UserAccount {
     private Integer id;
 
@@ -8,6 +10,10 @@ public class UserAccount {
     private String password;
 
     private String nickname;
+
+    private Date regDate;
+
+    private String status;
 
     public Integer getId() {
         return id;
@@ -39,5 +45,21 @@ public class UserAccount {
 
     public void setNickname(String nickname) {
         this.nickname = nickname == null ? null : nickname.trim();
+    }
+
+    public Date getRegDate() {
+        return regDate;
+    }
+
+    public void setRegDate(Date regDate) {
+        this.regDate = regDate;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status == null ? null : status.trim();
     }
 }

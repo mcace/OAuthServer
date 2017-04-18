@@ -49,7 +49,7 @@ public class AppController {
             application = appService.applyAppAccess(appName, host, owner);
             if (null == application) {
                 logger.error("第三方提交接入申请保存数据库时失败，appName:" + appName + ",host:" + host + ",owner:" + owner);
-                result.setCode(OAuthConstants.Code.BAD_REQUEST);
+                result.setCode(OAuthConstants.Code.INTERNAL_ERROR);
                 return result;
             }
             result.setCode(OAuthConstants.Code.OK);
@@ -58,7 +58,7 @@ public class AppController {
         } catch (Exception e) {
             logger.error("第三方提交接入申请时服务器发生错误，appName:" + appName + ",host:" + host + ",owner:" + owner);
             logger.error(e);
-            result.setCode(OAuthConstants.Code.BAD_REQUEST);
+            result.setCode(OAuthConstants.Code.INTERNAL_ERROR);
             return result;
 
         }
@@ -88,7 +88,7 @@ public class AppController {
         } catch (Exception e) {
             logger.error("通过appName查询第三方接入申请时发生错误，appName:" + appName);
             logger.error(e);
-            result.setCode(OAuthConstants.Code.BAD_REQUEST);
+            result.setCode(OAuthConstants.Code.INTERNAL_ERROR);
             return result;
         }
     }

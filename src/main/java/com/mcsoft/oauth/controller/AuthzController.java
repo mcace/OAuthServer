@@ -7,6 +7,7 @@ import com.mcsoft.common.model.AppInfo;
 import com.mcsoft.common.model.AuthorizationCode;
 import com.mcsoft.common.model.UserAccount;
 import com.mcsoft.common.model.UserAppRelation;
+import com.mcsoft.common.utils.ReflectUtil;
 import com.mcsoft.common.utils.StringUtils;
 import com.mcsoft.oauth.bean.AuthRequest;
 import com.mcsoft.oauth.service.AuthService;
@@ -20,6 +21,7 @@ import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
 import org.apache.oltu.oauth2.common.message.OAuthResponse;
 import org.apache.oltu.oauth2.common.utils.OAuthUtils;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -27,6 +29,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URLDecoder;
 
 /**
  * OAuth Controller
@@ -84,21 +87,30 @@ public class AuthzController {
                 if (!authService.isRequestDataNotModified(request)) {
                     throw OAuthUtils.handleOAuthProblemException(OAuthConstants.Messages.REQUEST_DATA_MODIFIED);
                 }
+                //清除保存的授权请求数据
+                authService.cleanPersistAuthData(request);
+
                 //获取用户帐号信息
                 UserAccount account = userService.getUserAccount(request);
 
                 //获取openID，如果不存在则生成并保存openID到数据库
                 UserAppRelation userAppRelation = openIDService.getOrCreateUserOpenID(account.getId(), appInfo.getAppId());
+                if (null == userAppRelation) {
+                    throw new Exception(OAuthConstants.Messages.INTERNAL_ERROR);
+                }
                 String openID = userAppRelation.getUserOpenId();
 
                 //生成authorization code，并保存到数据库
                 AuthorizationCode code = tokenService.createAuthorizationCode(request, openID);
+                if (null == code) {
+                    throw new Exception(OAuthConstants.Messages.INTERNAL_ERROR);
+                }
 
                 //跳转到第三方连接
                 OAuthASResponse.OAuthAuthorizationResponseBuilder responseBuilder = OAuthASResponse
                         .authorizationResponse(request, HttpServletResponse.SC_FOUND)
                         .setCode(code.getAuthorzCode())
-                        .location(oauthRequest.getRedirectURI());
+                        .location(URLDecoder.decode(oauthRequest.getRedirectURI(), "utf-8"));
                 //设定state
                 String state = oauthRequest.getState();
                 if (!StringUtils.isEmpty(state)) {
@@ -108,7 +120,7 @@ public class AuthzController {
                 response.sendRedirect(oauthResponse.getLocationUri());
                 return;
             }
-            throw OAuthUtils.handleOAuthProblemException("Bad request");
+            throw OAuthUtils.handleOAuthProblemException(OAuthConstants.Messages.INTERNAL_ERROR);
         } catch (Exception ex) {
             logger.error("验证授权时发生错误");
             logger.error(ex);
@@ -122,7 +134,7 @@ public class AuthzController {
             } else {
                 oauthResponse = OAuthResponse
                         .errorResponse(HttpServletResponse.SC_UNAUTHORIZED)
-                        .error(OAuthProblemException.error(OAuthConstants.Code.BAD_REQUEST).description(ex.getMessage()))
+                        .error(OAuthProblemException.error(OAuthConstants.Code.INTERNAL_ERROR).description(ex.getMessage()))
                         .buildJSONMessage();
             }
             response.getWriter().write(oauthResponse.getBody());
@@ -130,14 +142,27 @@ public class AuthzController {
     }
 
     @RequestMapping("/show")
-    public String show(HttpServletRequest request, HttpServletResponse response, RedirectAttributes attributes)
+    public String show(HttpServletRequest request, HttpServletResponse response, RedirectAttributes attributes, ModelMap modelMap)
             throws OAuthSystemException, IOException {
 
         try {
-            new OAuthAuthzRequest(request);//验证参数
+            new OAuthAuthzRequest(request);//验证参数(偷懒做法)
+            AuthRequest authRequest = new AuthRequest(request);
+            String client_id = authRequest.getClient_id();
+            String scope = authRequest.getScope();
+            if (StringUtils.isEmpty(scope)) {
+                //如果没有设定scope，则使用默认scope
+                scope = "default";
+            }
 
-            return "redirect:" + AuthRequest.concatAuthURI(request, "/oauth2.0/show.html");
-        } catch (OAuthProblemException ex) {
+            AppInfo appInfo = appService.getAppInfoInServiceByAppId(Integer.valueOf(client_id));
+            modelMap.put("app_name", appInfo.getAppName());
+            modelMap.put("scope", scope);
+
+            attributes.addAllAttributes(ReflectUtil.convertObjToMap(authRequest));
+
+            return "/oauth2.0/show";
+        } catch (Exception ex) {
             logger.error("验证授权时发生错误");
             logger.error(ex);
             return "/error/401.html";

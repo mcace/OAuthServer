@@ -44,7 +44,7 @@ public interface AuthService {
      * @param request Http请求对象
      * @return 授权请求数据
      */
-    void persistAuthData(HttpServletRequest request);
+    AuthRequest persistAuthData(HttpServletRequest request) throws Exception;
 
     /**
      * 获取授权请求的数据
@@ -60,5 +60,13 @@ public interface AuthService {
      * @param request Http请求对象
      * @return 参数是否没有改变
      */
-    boolean isRequestDataNotModified(HttpServletRequest request);
+    boolean isRequestDataNotModified(HttpServletRequest request) throws Exception;
+
+    /**
+     * 清除保存的授权请求数据
+     *
+     * @param request Http请求对象
+     * @return 授权请求对象
+     */
+    AuthRequest cleanPersistAuthData(HttpServletRequest request);
 }

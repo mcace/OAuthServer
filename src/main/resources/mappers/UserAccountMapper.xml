@@ -2,13 +2,15 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.mcsoft.account.dao.UserAccountMapper">
     <resultMap id="BaseResultMap" type="com.mcsoft.common.model.UserAccount">
-        <id column="id" property="id" jdbcType="INTEGER"/>
-        <result column="username" property="username" jdbcType="CHAR"/>
-        <result column="password" property="password" jdbcType="CHAR"/>
-        <result column="nickname" property="nickname" jdbcType="VARCHAR"/>
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="username" property="username" jdbcType="CHAR" />
+        <result column="password" property="password" jdbcType="CHAR" />
+        <result column="nickname" property="nickname" jdbcType="VARCHAR" />
+        <result column="reg_date" property="regDate" jdbcType="TIMESTAMP" />
+        <result column="status" property="status" jdbcType="VARCHAR" />
     </resultMap>
     <sql id="Base_Column_List">
-        id, username, password, nickname
+        id, username, password, nickname, reg_date, status
     </sql>
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
         select
@@ -22,9 +24,9 @@
     </delete>
     <insert id="insert" parameterType="UserAccount">
         INSERT INTO user_account (id, username, password,
-                                  nickname)
+                                  nickname, regDate, status)
         VALUES (#{id,jdbcType=INTEGER}, #{username,jdbcType=CHAR}, #{password,jdbcType=CHAR},
-                #{nickname,jdbcType=VARCHAR})
+                #{nickname,jdbcType=VARCHAR}, #{regDate,jdbcType=TIMESTAMP}, #{status,jdbcType=VARCHAR})
     </insert>
     <insert id="insertSelective" parameterType="UserAccount">
         insert into user_account
@@ -41,6 +43,12 @@
             <if test="nickname != null">
                 nickname,
             </if>
+            <if test="regDate != null">
+                regDate,
+            </if>
+            <if test="status != null">
+                status
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -54,6 +62,12 @@
             </if>
             <if test="nickname != null">
                 #{nickname,jdbcType=VARCHAR},
+            </if>
+            <if test="regDate != null">
+                #{regDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=VARCHAR}
             </if>
         </trim>
     </insert>
@@ -69,6 +83,12 @@
             <if test="nickname != null">
                 nickname = #{nickname,jdbcType=VARCHAR},
             </if>
+            <if test="regDate != null">
+                regDate = #{regDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=VARCHAR}
+            </if>
         </set>
         where id = #{id,jdbcType=INTEGER}
     </update>
@@ -76,7 +96,9 @@
         UPDATE user_account
         SET username = #{username,jdbcType=CHAR},
             password = #{password,jdbcType=CHAR},
-            nickname = #{nickname,jdbcType=VARCHAR}
+            nickname = #{nickname,jdbcType=VARCHAR},
+            regDate = #{regDate,jdbcType=TIMESTAMP},
+            status   = #{status,jdbcType=VARCHAR}
         WHERE id = #{id,jdbcType=INTEGER}
     </update>
     <select id="getUserAccountByUsernameAndPwd" resultMap="BaseResultMap" parameterType="Map">
@@ -91,6 +113,7 @@
         WHERE lower(username) = lower(#{username})
     </select>
     <insert id="insertUser" parameterType="UserAccount" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO user_account (username, password, nickname) VALUES (#{username}, #{md5pwd}, #{nickname})
+        INSERT INTO user_account (username, password, nickname, regDate, status)
+        VALUES (#{username}, #{md5pwd}, #{nickname}, #{regDate}, #{status})
     </insert>
 </mapper>

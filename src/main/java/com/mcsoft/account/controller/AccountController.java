@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
@@ -31,7 +32,7 @@ public class AccountController {
 
     @RequestMapping(value = "login", method = RequestMethod.GET)
     public String loginRedirect() {
-        return "/account/login.html";
+        return "/account/login";
     }
 
     @RequestMapping(value = "register", method = RequestMethod.GET)
@@ -49,7 +50,7 @@ public class AccountController {
      */
     @ResponseBody
     @RequestMapping(value = "/sign-in", method = RequestMethod.POST)
-    public APIResult signIn(HttpSession session, String username, String pwd) {
+    public APIResult signIn(HttpServletResponse response, HttpSession session, String username, String pwd) {
         APIResult result = new APIResult();
         result.setCode(OAuthConstants.Code.OK);
 
@@ -68,16 +69,19 @@ public class AccountController {
             //查询到用户
             session.setAttribute("username", username);
             session.setAttribute("userId", account.getId());
+            session.setAttribute("create_date", account.getRegDate().getTime());
 
             account.setPassword(null);//不再返回用户密码
             result.setData(account);
+
+            response.setHeader("Access-Control-Allow-Origin", "*");//允许所有域名访问
             return result;
         } catch (Exception e) {
             //查询时出错
             logger.error("用户登录进行账号密码验证时服务器出错,用户名:" + username + ",密码:" + pwd);
             logger.error(e);
 
-            result.setCode(OAuthConstants.Code.BAD_REQUEST);
+            result.setCode(OAuthConstants.Code.INTERNAL_ERROR);
             return result;
         }
 
@@ -115,7 +119,7 @@ public class AccountController {
             if (null == account) {
                 logger.error("用户注册保存数据库失败，用户名:" + username + ",密码:" + pwd + ",昵称:" + nickname);
                 //保存失败
-                result.setCode(OAuthConstants.Code.BAD_REQUEST);
+                result.setCode(OAuthConstants.Code.INTERNAL_ERROR);
                 return result;
             }
             account.setPassword(null);//不再返回用户密码
@@ -124,7 +128,7 @@ public class AccountController {
         } catch (Exception e) {
             logger.error("注册时发生错误，用户名:" + username + ",密码:" + pwd + ",昵称:" + nickname);
             logger.error(e);
-            result.setCode(OAuthConstants.Code.BAD_REQUEST);
+            result.setCode(OAuthConstants.Code.INTERNAL_ERROR);
             return result;
         }
     }
@@ -135,6 +139,8 @@ public class AccountController {
      * @param session 服务器session
      * @return 调用结果
      */
+    @ResponseBody
+    @RequestMapping(value = "user-info", method = RequestMethod.GET)
     public APIResult getUserAccountInfo(HttpSession session) {
         APIResult result = new APIResult();
         result.setCode(OAuthConstants.Code.OK);
@@ -153,7 +159,7 @@ public class AccountController {
         } catch (Exception e) {
             logger.error("查询用户信息时服务器发生错误");
             logger.error(e);
-            result.setCode(OAuthConstants.Code.BAD_REQUEST);
+            result.setCode(OAuthConstants.Code.INTERNAL_ERROR);
             return result;
         }
     }
